@@ -54,6 +54,6 @@ public class ProductoServicioImpl implements ProductoServicio {
 
     @Override
     public List<Producto> obtenerConStockActual() {
-        return productoRepository.findByStockGreaterThan(0);
+        return productoRepository.findByStockActualGreaterThan(0);
     }
 }

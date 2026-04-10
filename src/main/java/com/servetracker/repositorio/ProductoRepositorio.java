@@ -10,5 +10,5 @@ import com.servetracker.modelo.Producto;
 @Repository
 public interface ProductoRepositorio extends JpaRepository<Producto, Integer> {
 
-	List<Producto> findByStockGreaterThan(int stock);
+	List<Producto> findByStockActualGreaterThan(double cantidad);
 }

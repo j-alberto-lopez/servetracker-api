@@ -33,34 +33,39 @@ public class ProductoControlador {
 
     
     @GetMapping("/{id}")
-    public ResponseEntity<Dificultad> obtenerPorId(@PathVariable int id) {
+    public ResponseEntity<Producto> obtenerPorId(@PathVariable int id) {
 
-        Dificultad dificultad = servicio.obtenerPorId(id);
+        Producto producto = servicio.obtenerPorId(id);
 
-        if (dificultad == null) {
+        if (producto == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(dificultad);
+        return ResponseEntity.ok(producto);
     }
 
     
     @PostMapping
-    public ResponseEntity<Dificultad> guardar(@RequestBody Dificultad dificultad) {
-        return ResponseEntity.ok(servicio.guardar(dificultad));
+    public ResponseEntity<Producto> guardar(@RequestBody Producto producto) {
+        return ResponseEntity.ok(servicio.guardar(producto));
     }
 
    
     @PutMapping("/{id}")
-    public ResponseEntity<Dificultad> modificar(@PathVariable int id, @RequestBody Dificultad dificultad) {
-        dificultad.setId(id);
-        return ResponseEntity.ok(servicio.guardar(dificultad));
+    public ResponseEntity<Producto> actualizar(@PathVariable int id, @RequestBody Producto producto) {
+        producto.setId(id);
+        return ResponseEntity.ok(servicio.guardar(producto));
     }
 
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> borrar(@PathVariable int id) {
-        servicio.borrar(id);
+    public ResponseEntity<Void> eliminar(@PathVariable int id) {
+        servicio.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/con-stock")
+    public ResponseEntity<List<Producto>> obtenerConStock() {
+        return ResponseEntity.ok(servicio.obtenerConStockActual());
     }
 }

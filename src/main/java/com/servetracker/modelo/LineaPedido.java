@@ -1,6 +1,6 @@
 package com.servetracker.modelo;
 
-import java.util.Objects;
+import java.math.BigDecimal;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,109 +16,56 @@ public class LineaPedido {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Long id;
 	
-	private double cantidad;
+	private int cantidad;
 	
-	private double precioTotal;
+	private BigDecimal precioTotal;
 	
-	private double precioUnitario;
+	private BigDecimal precioUnitario;
 	
-	private double cantidadDisponible;
+	private int cantidadDisponible;
 	
+	@ManyToOne
+	@JoinColumn(name = "pedido_id")
+	private Pedido pedido;
+	 public Pedido getPedido() {
+		return pedido;
+	}
 	 @ManyToOne
 	 @JoinColumn(name = "producto_id")
 	 private Producto producto;
 
-	 public LineaPedido(int id, double cantidad, double precioTotal, double precioUnitario, double cantidadDisponible,
+	 public LineaPedido(int cantidad, BigDecimal precioTotal, BigDecimal precioUnitario, int cantidadDisponible,
 			Producto producto) {
 		super();
-		this.id = id;
+		this.id = null;
 		this.cantidad = cantidad;
 		this.precioTotal = precioTotal;
 		this.precioUnitario = precioUnitario;
 		this.cantidadDisponible = cantidadDisponible;
 		this.producto = producto;
 	 }
-	 
 	 public LineaPedido() {
 			super();
-			 }
-
-	 public int getId() {
-		 return id;
-	 }
-
-	 public void setId(int id) {
-		 this.id = id;
-	 }
-
-	 public double getCantidad() {
-		 return cantidad;
-	 }
-
-	 public void setCantidad(double cantidad) {
-		 this.cantidad = cantidad;
-	 }
-
-	 public double getPrecioTotal() {
-		 return precioTotal;
-	 }
-
-	 public void setPrecioTotal(double precioTotal) {
-		 this.precioTotal = precioTotal;
-	 }
-
-	 public double getPrecioUnitario() {
-		 return precioUnitario;
-	 }
-
-	 public void setPrecioUnitario(double precioUnitario) {
-		 this.precioUnitario = precioUnitario;
-	 }
-
-	 public double getCantidadDisponible() {
-		 return cantidadDisponible;
-	 }
-
-	 public void setCantidadDisponible(double cantidadDisponible) {
-		 this.cantidadDisponible = cantidadDisponible;
-	 }
-
-	 public Producto getProducto() {
-		 return producto;
-	 }
-
-	 public void setProducto(Producto producto) {
-		 this.producto = producto;
-	 }
-
+		 }
 	 @Override
 	 public String toString() {
 		return "LineaPedido [id=" + id + ", cantidad=" + cantidad + ", precioTotal=" + precioTotal + ", precioUnitario="
-				+ precioUnitario + ", cantidadDisponible=" + cantidadDisponible + ", producto=" + producto + "]";
+				+ precioUnitario + ", cantidadDisponible=" + cantidadDisponible + "]";
 	 }
-
-	 @Override
-	 public int hashCode() {
-		return Objects.hash(cantidad, cantidadDisponible, id, precioTotal, precioUnitario, producto);
+	 public BigDecimal getPrecioUnitario() {
+		 return precioUnitario;
 	 }
-
-	 @Override
-	 public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		LineaPedido other = (LineaPedido) obj;
-		return Double.doubleToLongBits(cantidad) == Double.doubleToLongBits(other.cantidad)
-				&& Double.doubleToLongBits(cantidadDisponible) == Double.doubleToLongBits(other.cantidadDisponible)
-				&& id == other.id && Double.doubleToLongBits(precioTotal) == Double.doubleToLongBits(other.precioTotal)
-				&& Double.doubleToLongBits(precioUnitario) == Double.doubleToLongBits(other.precioUnitario)
-				&& Objects.equals(producto, other.producto);
+	 public void setPrecioUnitario(BigDecimal precioUnitario) {
+		 this.precioUnitario = precioUnitario;
 	 }
-	
+	 public int getCantidadDisponible() {
+		 return cantidadDisponible;
+	 }
+	 public void setCantidadDisponible(int cantidadDisponible) {
+		 this.cantidadDisponible = cantidadDisponible;
+	 }
 	 
+
 }

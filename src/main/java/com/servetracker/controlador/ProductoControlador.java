@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.servetracker.dtos.ElementoListadoProductoRespuesta;
 import com.servetracker.modelo.Producto;
 import com.servetracker.servicio.ProductoServicio;
 
@@ -27,8 +28,8 @@ public class ProductoControlador {
 
     
     @GetMapping
-    public ResponseEntity<List<Producto>> obtenerTodos() {
-        return ResponseEntity.ok(servicio.obtenerTodos());
+    public ResponseEntity<List<ElementoListadoProductoRespuesta>> obtenerTodos() {
+        return ResponseEntity.ok(servicio.obtenerListado());
     }
 
     

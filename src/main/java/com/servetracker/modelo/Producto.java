@@ -56,6 +56,7 @@ public class Producto {
 		this.stockMin = stockMin;
 		this.unidadMedida = unidadMedida;
 		this.tipoIVA = tipoIVA;
+		
 	   }
 	   
 	   public Producto() {

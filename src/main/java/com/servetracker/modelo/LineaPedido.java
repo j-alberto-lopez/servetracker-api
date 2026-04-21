@@ -20,6 +20,9 @@ public class LineaPedido {
 	
 	private int cantidad;
 	
+	public int getCantidad() {
+		return cantidad;
+	}
 	private BigDecimal precioTotal;
 	
 	private BigDecimal precioUnitario;

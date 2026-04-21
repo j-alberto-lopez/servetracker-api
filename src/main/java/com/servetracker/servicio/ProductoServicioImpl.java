@@ -3,14 +3,19 @@ package com.servetracker.servicio;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.servetracker.dtos.ElementoListadoProductoRespuesta;
+import com.servetracker.dtos.ProveedorStockDTO;
 import com.servetracker.modelo.LineaPedido;
 import com.servetracker.modelo.Producto;
+import com.servetracker.modelo.Proveedor;
 import com.servetracker.repositorio.LineaPedidoRepositorio;
 import com.servetracker.repositorio.ProductoRepositorio;
 
@@ -38,13 +43,26 @@ public class ProductoServicioImpl implements ProductoServicio {
 		   -beneficioSemana;
 		    - estadoBeneficioSemana;
         	 */
-        List<Producto> productos = productoRepository.findAll();
-        List<ElementoListadoProductoRespuesta> resultado = new ArrayList<>(); 
+       List<Producto> productos = productoRepository.findAll();
+        List<ElementoListadoProductoRespuesta> resultado = new ArrayList<>();
+       
         	
         	for (Producto producto : productos) {
+        		
+        		 List<ProveedorStockDTO>proveedoresCantidad = new ArrayList<>();
+        		
         		 //  1. Obtener líneas de pedido DE ESTE PRODUCTO
-                List<LineaPedido> lineasPedido = lineaPedidoRepositorio.findByProductoAndCantidadDisponibleGreaterThan(producto, 0);
+        		List<LineaPedido> lineasPedido = lineaPedidoRepositorio.findByProductoAndCantidadDisponibleGreaterThanOrderByPedidoFechaAsc(producto, 0);
                 
+        		for (LineaPedido l: lineasPedido) {
+        		    String nombreProveedor = l.getPedido().getProveedor().getNombre();
+        		    double cantidad = l.getCantidadDisponible();
+
+        		    ProveedorStockDTO dto = new ProveedorStockDTO(nombreProveedor, cantidad);
+
+        		    proveedoresCantidad.add(dto);
+        		}
+        		
              //  Inicializar 
                 BigDecimal totalCoste = BigDecimal.ZERO;
                 double totalUnidades = 0;
@@ -77,12 +95,16 @@ public class ProductoServicioImpl implements ProductoServicio {
                     );
                 }
 
+                
+               
                 double precioCompra = precioCompraBD.doubleValue();
                 
                 
         		String nombre = producto.getNombre();
         		double precioVenta = producto.getPrecioVenta();
         		String tipo = producto.getTipo().name();
+        		
+        		
         		
         		   //  3. Crear DTO
                 ElementoListadoProductoRespuesta productoRespuesta = new ElementoListadoProductoRespuesta();
@@ -91,7 +113,7 @@ public class ProductoServicioImpl implements ProductoServicio {
                 productoRespuesta.setPrecioVenta(precioVenta);
                 productoRespuesta.setTipo(tipo);
                 productoRespuesta.setPrecioCompra(precioCompra);
-               
+                productoRespuesta.setProveedores(proveedoresCantidad);
                 
                 resultado.add(productoRespuesta);
 		}
@@ -136,3 +158,5 @@ public class ProductoServicioImpl implements ProductoServicio {
         return productoRepository.findByStockActualGreaterThan(0);
     }
 }
+
+   

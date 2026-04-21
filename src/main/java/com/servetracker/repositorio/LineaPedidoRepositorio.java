@@ -18,14 +18,14 @@ public interface LineaPedidoRepositorio extends JpaRepository<LineaPedido, Integ
 	// @Query("SELECT l FROM LineaPedido l WHERE l.producto = :producto AND l.cantidadDisponinble > 0 ")
 	//List<LineaPedido> findDisponibleByProducto(Producto producto);
 
-	// @Query("SELECT l FROM LineaPedido l WHERE l.producto = :producto AND l.cantidadDisponinble > 0 ORDER BY l.pedido.fecha ASC")
+	// @Query("SELECT l FROM LineaPedido l WHERE l.producto = :producto AND l.cantidadDisponible > 0 ORDER BY l.pedido.fecha ASC")
 	//List<LineaPedido> findDisponibleByProductoOrdenadoPorFecha(Producto producto);
 
 
 	List<LineaPedido> findByProductoAndCantidadDisponibleGreaterThanOrderByPedidoFechaAsc(Producto producto, int cantidad);
 	//Stream<LineaPedido> findByProductoAndCantidadDisponibleGreaterThanOrderByPedidoFechaAsc(Producto producto, int cantidad);
 
-	List<LineaPedido> findByProductoAndCantidadDisponibleGreaterThanOrderByPedidoFechaAsc(Producto producto, int cantidad, Pageable pageable);
+	//List<LineaPedido> findByProductoAndCantidadDisponibleGreaterThanOrderByPedidoFechaAsc(Producto producto, int cantidad, Pageable pageable);
 	
 
 }

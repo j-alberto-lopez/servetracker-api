@@ -1,129 +1,131 @@
 package com.servetracker.dtos;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ElementoListadoProductoRespuesta {
 
-	private String nombre;
-	private double precioCompra;
-	private double precioVenta;
-	private String tipo;
+    private String nombre;
+    private double precioCompra;
+    private double precioVenta;
+    private String tipo;
 
-	private int ventasSemanales;
-	private double estadoVentas; // número (ej: cantidad vendida)
+    private int ventasSemanales;
+    private double estadoVentas;
 
-	private double beneficioProducto;
-	private double estadoBeneficioProducto; // número (ej: beneficio €)
+    private double beneficioProducto;
+    private double estadoBeneficioProducto;
 
-	private double beneficioSemana;
-	private double estadoBeneficioSemana; // número (ej: beneficio €)
+    private double beneficioSemana;
+    private double estadoBeneficioSemana;
 
-	private String proveedor;
+    private List<ProveedorStockDTO> proveedores;
 
-	// 🔹 Constructor vacío
-	public ElementoListadoProductoRespuesta() {
-	}
+    // 🔹 Constructor vacío (IMPORTANTE)
+    public ElementoListadoProductoRespuesta() {
+        this.proveedores = new ArrayList<>(); // 🔥 evita null
+    }
 
-	// 🔹 Constructor completo
-	public ElementoListadoProductoRespuesta(String nombre, double precioCompra, double precioVenta, String tipo,
-			double estadoVentas, double estadoBeneficioProducto, String proveedor) {
-		this.nombre = nombre;
-		this.precioCompra = precioCompra;
-		this.precioVenta = precioVenta;
-		this.tipo = tipo;
-		this.estadoVentas = estadoVentas;
-		this.estadoBeneficioProducto = estadoBeneficioProducto;
-		this.proveedor = proveedor;
-	}
+    // 🔹 Getters y Setters
 
-	// 🔹 Getters y Setters
+    public String getNombre() {
+        return nombre;
+    }
 
-	public String getNombre() {
-		return nombre;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public double getPrecioCompra() {
+        return precioCompra;
+    }
 
-	public double getPrecioCompra() {
-		return precioCompra;
-	}
+    public void setPrecioCompra(double precioCompra) {
+        this.precioCompra = precioCompra;
+    }
 
-	public void setPrecioCompra(double precioCompra) {
-		this.precioCompra = precioCompra;
-	}
+    public double getPrecioVenta() {
+        return precioVenta;
+    }
 
-	public double getPrecioVenta() {
-		return precioVenta;
-	}
+    public void setPrecioVenta(double precioVenta) {
+        this.precioVenta = precioVenta;
+    }
 
-	public void setPrecioVenta(double precioVenta) {
-		this.precioVenta = precioVenta;
-	}
+    public String getTipo() {
+        return tipo;
+    }
 
-	public String getTipo() {
-		return tipo;
-	}
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
 
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
-	}
+    public int getVentasSemanales() {
+        return ventasSemanales;
+    }
 
-	public double getEstadoVentas() {
-		return estadoVentas;
-	}
+    public void setVentasSemanales(int ventasSemanales) {
+        this.ventasSemanales = ventasSemanales;
+    }
 
-	public void setEstadoVentas(double estadoVentas) {
-		this.estadoVentas = estadoVentas;
-	}
+    public double getEstadoVentas() {
+        return estadoVentas;
+    }
 
-	public double getEstadoBeneficioProducto() {
-		return estadoBeneficioProducto;
-	}
+    public void setEstadoVentas(double estadoVentas) {
+        this.estadoVentas = estadoVentas;
+    }
 
-	public void setEstadoBeneficioProducto(double estadoBeneficioProducto) {
-		this.estadoBeneficioProducto = estadoBeneficioProducto;
-	}
+    public double getBeneficioProducto() {
+        return beneficioProducto;
+    }
 
-	public String getProveedor() {
-		return proveedor;
-	}
+    public void setBeneficioProducto(double beneficioProducto) {
+        this.beneficioProducto = beneficioProducto;
+    }
 
-	public void setProveedor(String proveedor) {
-		this.proveedor = proveedor;
-	}
+    public double getEstadoBeneficioProducto() {
+        return estadoBeneficioProducto;
+    }
 
-	// 🔹 toString
+    public void setEstadoBeneficioProducto(double estadoBeneficioProducto) {
+        this.estadoBeneficioProducto = estadoBeneficioProducto;
+    }
 
-	@Override
-	public String toString() {
-		return "ProductoCli [nombre=" + nombre + ", precioCompra=" + precioCompra + ", precioVenta=" + precioVenta
-				+ ", tipo=" + tipo + ", estadoVentas=" + estadoVentas + ", estadoBeneficio=" + estadoBeneficioProducto
-				+ ", proveedor=" + proveedor + "]";
-	}
+    public double getBeneficioSemana() {
+        return beneficioSemana;
+    }
 
-	// 🔹 equals & hashCode
+    public void setBeneficioSemana(double beneficioSemana) {
+        this.beneficioSemana = beneficioSemana;
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(nombre, precioCompra, precioVenta, tipo, estadoVentas, estadoBeneficioProducto, proveedor);
-	}
+    public double getEstadoBeneficioSemana() {
+        return estadoBeneficioSemana;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof ElementoListadoProductoRespuesta))
-			return false;
-		ElementoListadoProductoRespuesta other = (ElementoListadoProductoRespuesta) obj;
-		return Objects.equals(nombre, other.nombre)
-				&& Double.doubleToLongBits(precioCompra) == Double.doubleToLongBits(other.precioCompra)
-				&& Double.doubleToLongBits(precioVenta) == Double.doubleToLongBits(other.precioVenta)
-				&& Objects.equals(tipo, other.tipo)
-				&& Double.doubleToLongBits(estadoVentas) == Double.doubleToLongBits(other.estadoVentas)
-				&& Double.doubleToLongBits(estadoBeneficioProducto) == Double
-						.doubleToLongBits(other.estadoBeneficioProducto)
-				&& Objects.equals(proveedor, other.proveedor);
-	}
+    public void setEstadoBeneficioSemana(double estadoBeneficioSemana) {
+        this.estadoBeneficioSemana = estadoBeneficioSemana;
+    }
+
+    public List<ProveedorStockDTO> getProveedores() {
+        return proveedores;
+    }
+
+    public void setProveedores(List<ProveedorStockDTO> proveedores) {
+        this.proveedores = proveedores;
+    }
+
+    @Override
+    public String toString() {
+        return "ElementoListadoProductoRespuesta{" +
+                "nombre='" + nombre + '\'' +
+                ", precioCompra=" + precioCompra +
+                ", precioVenta=" + precioVenta +
+                ", tipo='" + tipo + '\'' +
+                ", proveedores=" + proveedores +
+                '}';
+    }
 }
+
+	

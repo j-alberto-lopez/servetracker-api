@@ -22,141 +22,149 @@ import com.servetracker.repositorio.ProductoRepositorio;
 @Service
 public class ProductoServicioImpl implements ProductoServicio {
 
-    @Autowired
-    private ProductoRepositorio productoRepository;
-    @Autowired
-    private LineaPedidoRepositorio lineaPedidoRepositorio;
-    
-    
+	@Autowired
+	private ProductoRepositorio productoRepository;
+	@Autowired
+	private LineaPedidoRepositorio lineaPedidoRepositorio;
 
-    @Override
-    public List<ElementoListadoProductoRespuesta> obtenerListado() {
-    	/*
-    	 * Obtener todos los productos, y para cada producto calcular:
-    	 * - precioCompra: Media ponderada de los precios de compra de todos los productos 
-    	 * para los que haya unidades disponibles.
-    	 * - ventasSemanales: Total de ventas (sacadas de linea ticket) en los últimos 7 dias.
-    	 * - estadoVentasSemanales: Relacion entre el numero de ventas en los ultimos 7 dias / el numero de ventas entre lo vendido entre 7 y 14 dias antes.
-		   - beneficioProducto;
-		   - estadoBeneficioProducto;  // número (ej: beneficio €)
-		
-		   -beneficioSemana;
-		    - estadoBeneficioSemana;
-        	 */
-       List<Producto> productos = productoRepository.findAll();
-        List<ElementoListadoProductoRespuesta> resultado = new ArrayList<>();
-       
-        	
-        	for (Producto producto : productos) {
-        		
-        		 List<ProveedorStockDTO>proveedoresCantidad = new ArrayList<>();
-        		
-        		 //  1. Obtener líneas de pedido DE ESTE PRODUCTO
-        		List<LineaPedido> lineasPedido = lineaPedidoRepositorio.findByProductoAndCantidadDisponibleGreaterThanOrderByPedidoFechaAsc(producto, 0);
-                
-        		for (LineaPedido l: lineasPedido) {
-        		    String nombreProveedor = l.getPedido().getProveedor().getNombre();
-        		    double cantidad = l.getCantidadDisponible();
+	@Override
+	public List<ElementoListadoProductoRespuesta> obtenerListado() {
+		/*
+		 * Obtener todos los productos, y para cada producto calcular: - precioCompra:
+		 * Media ponderada de los precios de compra de todos los productos para los que
+		 * haya unidades disponibles. - ventasSemanales: Total de ventas (sacadas de
+		 * linea ticket) en los últimos 7 dias. - estadoVentasSemanales: Relacion entre
+		 * el numero de ventas en los ultimos 7 dias / el numero de ventas entre lo
+		 * vendido entre 7 y 14 dias antes. - beneficioProducto; -
+		 * estadoBeneficioProducto; // número (ej: beneficio €)
+		 * 
+		 * -beneficioSemana; - estadoBeneficioSemana;
+		 */
 
-        		    ProveedorStockDTO dto = new ProveedorStockDTO(nombreProveedor, cantidad);
+		// 🔹 1. Obtener todos los productos
+		List<Producto> productos = productoRepository.findAll();
 
-        		    proveedoresCantidad.add(dto);
-        		}
-        		
-             //  Inicializar 
-                BigDecimal totalCoste = BigDecimal.ZERO;
-                double totalUnidades = 0;
-                
-                             
-             //  Recorrer líneas de pedido
-                for (LineaPedido lineaPedido: lineasPedido) {
-                	
-                	double cantidadDisponible = lineaPedido.getCantidadDisponible();
-                	BigDecimal precioUnitario = lineaPedido.getPrecioUnitario();
-                	
-                	  //  Solo usar stock disponible
+		// 🔹 Lista final que devolverás al frontend
+		List<ElementoListadoProductoRespuesta> resultado = new ArrayList<>();
 
-                    BigDecimal cantidad = BigDecimal.valueOf(cantidadDisponible);
+		// 🔹 2. Recorrer cada producto (todo se calcula por producto)
+		for (Producto producto : productos) {
 
-                    BigDecimal costeLinea = precioUnitario.multiply(cantidad);
+			// =====================================================
+			// 🔸 BLOQUE PROVEEDORES (detalle, NO agrupado)
+			// =====================================================
 
-                    totalCoste = totalCoste.add(costeLinea);
+			// Lista de proveedores para ESTE producto
+			List<ProveedorStockDTO> proveedoresCantidad = new ArrayList<>();
 
-                    totalUnidades += cantidadDisponible;
-                }
+			// Obtener líneas de pedido (compras) con stock disponible
+			List<LineaPedido> lineasPedido = lineaPedidoRepositorio
+					.findByProductoAndCantidadDisponibleGreaterThanOrderByPedidoFechaAsc(producto, 0);
+			// Recorrer cada línea de pedido para sacar proveedor + cantidad
+			for (LineaPedido l : lineasPedido) {
+				String nombreProveedor = l.getPedido().getProveedor().getNombre();
+				double cantidad = l.getCantidadDisponible();
+				// DTO con proveedor y cantidad de ese pedido
+				ProveedorStockDTO dto = new ProveedorStockDTO(nombreProveedor, cantidad);
 
-                BigDecimal precioCompraBD = BigDecimal.ZERO;
+				proveedoresCantidad.add(dto);
+			}
 
-                if (totalUnidades > 0) {
-                    precioCompraBD = totalCoste.divide(
-                        BigDecimal.valueOf(totalUnidades),
-                        2,
-                        RoundingMode.HALF_UP
-                    );
-                }
+			// =====================================================
+			// 🔸 BLOQUE PRECIO COMPRA (MEDIA PONDERADA)
+			// =====================================================
 
-                
-               
-                double precioCompra = precioCompraBD.doubleValue();
-                
-                
-        		String nombre = producto.getNombre();
-        		double precioVenta = producto.getPrecioVenta();
-        		String tipo = producto.getTipo().name();
-        		
-        		
-        		
-        		   //  3. Crear DTO
-                ElementoListadoProductoRespuesta productoRespuesta = new ElementoListadoProductoRespuesta();
-                
-                productoRespuesta.setNombre(nombre);
-                productoRespuesta.setPrecioVenta(precioVenta);
-                productoRespuesta.setTipo(tipo);
-                productoRespuesta.setPrecioCompra(precioCompra);
-                productoRespuesta.setProveedores(proveedoresCantidad);
-                
-                resultado.add(productoRespuesta);
+			// Acumuladores
+			BigDecimal totalCoste = BigDecimal.ZERO;
+			double totalUnidades = 0;
+
+			// Recorrer líneas de pedido para calcular coste total
+			for (LineaPedido lineaPedido : lineasPedido) {
+
+				double cantidadDisponible = lineaPedido.getCantidadDisponible();
+				BigDecimal precioUnitario = lineaPedido.getPrecioUnitario();
+
+				// Convertir a BigDecimal para operar correctamente
+
+				BigDecimal cantidad = BigDecimal.valueOf(cantidadDisponible);
+
+				// coste = precio * cantidad
+				BigDecimal costeLinea = precioUnitario.multiply(cantidad);
+				// acumular
+				totalCoste = totalCoste.add(costeLinea);
+
+				totalUnidades += cantidadDisponible;
+			}
+			// calcular media ponderada
+			BigDecimal precioCompraBD = BigDecimal.ZERO;
+
+			if (totalUnidades > 0) {
+				precioCompraBD = totalCoste.divide(BigDecimal.valueOf(totalUnidades), 2, RoundingMode.HALF_UP);
+			}
+
+			double precioCompra = precioCompraBD.doubleValue();
+
+			// =====================================================
+			// 🔸 DATOS BÁSICOS DEL PRODUCTO
+			// =====================================================
+
+			String nombre = producto.getNombre();
+			double precioVenta = producto.getPrecioVenta();
+			String tipo = producto.getTipo().name();
+
+			// =====================================================
+			// 🔸 CREACIÓN DEL DTO (LO QUE DEVUELVES)
+			// =====================================================
+
+			ElementoListadoProductoRespuesta productoRespuesta = new ElementoListadoProductoRespuesta();
+
+			productoRespuesta.setNombre(nombre);
+			productoRespuesta.setPrecioVenta(precioVenta);
+			productoRespuesta.setTipo(tipo);
+			productoRespuesta.setPrecioCompra(precioCompra);
+			productoRespuesta.setProveedores(proveedoresCantidad);
+
+			resultado.add(productoRespuesta);
 		}
-        	return resultado;
-    }
+		// 🔹 devolver lista completa
+		return resultado;
+	}
 
-    @Override
-    public Producto obtenerPorId(int id) {
-        return productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
-    }
+	@Override
+	public Producto obtenerPorId(int id) {
+		return productoRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
+	}
 
-    @Override
-    public Producto guardar(Producto producto) {
+	@Override
+	public Producto guardar(Producto producto) {
 
-        //  VALIDACIONES PRO
-        if (producto.getNombre() == null || producto.getNombre().isEmpty()) {
-            throw new RuntimeException("El nombre del producto es obligatorio");
-        }
+		// VALIDACIONES PRO
+		if (producto.getNombre() == null || producto.getNombre().isEmpty()) {
+			throw new RuntimeException("El nombre del producto es obligatorio");
+		}
 
-        if (producto.getPrecioVenta() <= 0) {
-            throw new RuntimeException("El precio debe ser mayor que 0");
-        }
+		if (producto.getPrecioVenta() <= 0) {
+			throw new RuntimeException("El precio debe ser mayor que 0");
+		}
 
-        if (producto.getStockActual() < 0) {
-            throw new RuntimeException("El stock no puede ser negativo");
-        }
+		if (producto.getStockActual() < 0) {
+			throw new RuntimeException("El stock no puede ser negativo");
+		}
 
-        return productoRepository.save(producto);
-    }
+		return productoRepository.save(producto);
+	}
 
-    @Override
-    public void eliminar(int id) {
-        if (!productoRepository.existsById(id)) {
-            throw new RuntimeException("No se puede eliminar. Producto no existe");
-        }
-        productoRepository.deleteById(id);
-    }
+	@Override
+	public void eliminar(int id) {
+		if (!productoRepository.existsById(id)) {
+			throw new RuntimeException("No se puede eliminar. Producto no existe");
+		}
+		productoRepository.deleteById(id);
+	}
 
-    @Override
-    public List<Producto> obtenerConStockActual() {
-        return productoRepository.findByStockActualGreaterThan(0);
-    }
+	@Override
+	public List<Producto> obtenerConStockActual() {
+		return productoRepository.findByStockActualGreaterThan(0);
+	}
 }
-
-   

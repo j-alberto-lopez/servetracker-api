@@ -21,9 +21,9 @@ public class ElementoListadoProductoRespuesta {
 
     private List<ProveedorStockDTO> proveedores;
 
-    // 🔹 Constructor vacío (IMPORTANTE)
+    // 🔹 Constructor vacío 
     public ElementoListadoProductoRespuesta() {
-        this.proveedores = new ArrayList<>(); // 🔥 evita null
+        this.proveedores = new ArrayList<>(); 
     }
 
     // 🔹 Getters y Setters

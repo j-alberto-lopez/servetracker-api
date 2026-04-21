@@ -2,21 +2,18 @@ package com.servetracker.servicio;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import com.servetracker.dtos.ElementoListadoProductoRespuesta;
 import com.servetracker.dtos.ProveedorStockDTO;
 import com.servetracker.modelo.LineaPedido;
+import com.servetracker.modelo.LineaTicket;
 import com.servetracker.modelo.Producto;
-import com.servetracker.modelo.Proveedor;
 import com.servetracker.repositorio.LineaPedidoRepositorio;
+import com.servetracker.repositorio.LineaTicketRepositorio;
 import com.servetracker.repositorio.ProductoRepositorio;
 
 @Service
@@ -26,6 +23,8 @@ public class ProductoServicioImpl implements ProductoServicio {
 	private ProductoRepositorio productoRepository;
 	@Autowired
 	private LineaPedidoRepositorio lineaPedidoRepositorio;
+	@Autowired
+	private LineaTicketRepositorio lineaTicketRepositorio;
 
 	@Override
 	public List<ElementoListadoProductoRespuesta> obtenerListado() {
@@ -48,8 +47,24 @@ public class ProductoServicioImpl implements ProductoServicio {
 		List<ElementoListadoProductoRespuesta> resultado = new ArrayList<>();
 
 		// 🔹 2. Recorrer cada producto (todo se calcula por producto)
+		
+		
+		//Ventas semana
+		LocalDateTime ahora = LocalDateTime.now();
+		LocalDateTime hace7dias = ahora.minusDays(7);
 		for (Producto producto : productos) {
+			
+			// traer SOLO ventas de ese producto en ese rango
+			List<LineaTicket> lineasTicket =
+				    lineaTicketRepositorio.findByProductoAndTicketFechaBetween(producto, hace7dias, ahora);
 
+			//  sumar unidades
+			int ventasSemanales = 0;
+
+			for (LineaTicket lt : lineasTicket) {
+			    ventasSemanales += lt.getCantidad();
+			}
+		
 			// =====================================================
 			// 🔸 BLOQUE PROVEEDORES (detalle, NO agrupado)
 			// =====================================================
@@ -123,6 +138,7 @@ public class ProductoServicioImpl implements ProductoServicio {
 			productoRespuesta.setTipo(tipo);
 			productoRespuesta.setPrecioCompra(precioCompra);
 			productoRespuesta.setProveedores(proveedoresCantidad);
+			productoRespuesta.setVentasSemanales(ventasSemanales);
 
 			resultado.add(productoRespuesta);
 		}

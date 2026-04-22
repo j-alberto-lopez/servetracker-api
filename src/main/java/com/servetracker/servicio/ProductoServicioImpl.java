@@ -2,6 +2,7 @@ package com.servetracker.servicio;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +37,9 @@ public class ProductoServicioImpl implements ProductoServicio {
         List<Producto> productos = productoRepository.findAll();
         List<ElementoListadoProductoRespuesta> resultado = new ArrayList<>();
 
-        LocalDateTime ahora = LocalDateTime.now();
-        LocalDateTime hace7dias = ahora.minusDays(7);
-        LocalDateTime hace14dias = ahora.minusDays(14);
+        LocalDate ahora = LocalDate.now();
+        LocalDate hace7dias = ahora.minusDays(7);
+        LocalDate hace14dias = ahora.minusDays(14);
 
         for (Producto producto : productos) {
 
@@ -55,6 +56,10 @@ public class ProductoServicioImpl implements ProductoServicio {
 
             // 🔹 Beneficio (FIFO)
             double beneficio = calcularBeneficio(producto);
+            double beneficioSemana = calcularBeneficioSemana(producto, hace7dias, ahora);
+            double beneficioSemanaOld = calcularBeneficioSemana(producto, hace14dias, hace7dias);
+
+            double estadoBeneficioSemana = beneficioSemana - beneficioSemanaOld;
 
             // 🔹 Datos básicos
             ElementoListadoProductoRespuesta dto = new ElementoListadoProductoRespuesta();
@@ -67,6 +72,8 @@ public class ProductoServicioImpl implements ProductoServicio {
             dto.setVentasSemanales(ventasSemanales);
             dto.setEstadoVentas(estadoVentas);
             dto.setBeneficioProducto(beneficio);
+            dto.setBeneficioSemana(beneficioSemana);
+            dto.setEstadoBeneficioSemana(estadoBeneficioSemana);
            
 
             resultado.add(dto);
@@ -79,7 +86,7 @@ public class ProductoServicioImpl implements ProductoServicio {
     // 🔹 MÉTODOS PRIVADOS (LÓGICA SEPARADA)
     // =====================================================
 
-    private int calcularVentasSemana(Producto producto, LocalDateTime inicio, LocalDateTime fin) {
+    private int calcularVentasSemana(Producto producto, LocalDate inicio, LocalDate fin) {
         List<LineaTicket> lineas = lineaTicketRepositorio
                 .findByProductoAndTicketFechaGreaterThanEqualAndTicketFechaLessThan(producto, inicio, fin);
 
@@ -162,6 +169,19 @@ public class ProductoServicioImpl implements ProductoServicio {
         double costeUnitario = costeTotal / producto.getStockActual();
 
         return producto.getPrecioVenta() - costeUnitario;
+    }
+    private double calcularBeneficioSemana(Producto producto, LocalDate inicio, LocalDate fin) {
+
+        List<LineaTicket> lineas = lineaTicketRepositorio
+                .findByProductoAndTicketFechaGreaterThanEqualAndTicketFechaLessThan(producto, inicio, fin);
+
+        double total = 0;
+
+        for (LineaTicket lt : lineas) {
+            total += lt.getBeneficioUnitarioEnVenta() * lt.getCantidad();
+        }
+
+        return total;
     }
 
     // =====================================================

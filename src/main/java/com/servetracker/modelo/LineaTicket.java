@@ -18,9 +18,13 @@ public class LineaTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private double cantidad;
+    private int cantidad;
 
     private double precioVentaUnitario;
+    
+    private double costeUnitarioEnVenta;
+    
+    private double beneficioUnitarioEnVenta;
 
     private double ivaAplicado;
 
@@ -39,19 +43,22 @@ public class LineaTicket {
 	public void setTicket(Ticket ticket) {
 		this.ticket = ticket;
 	}
-	
-
-	public LineaTicket(int id, double cantidad, double precioVentaUnitario, double ivaAplicado, Producto producto) {
+	public LineaTicket(int id, int cantidad, double precioVentaUnitario, double costeUnitarioEnVenta,
+			double beneficioUnitarioEnVenta, double ivaAplicado, Producto producto, Ticket ticket) {
 		super();
 		this.id = id;
 		this.cantidad = cantidad;
 		this.precioVentaUnitario = precioVentaUnitario;
+		this.costeUnitarioEnVenta = costeUnitarioEnVenta;
+		this.beneficioUnitarioEnVenta = beneficioUnitarioEnVenta;
 		this.ivaAplicado = ivaAplicado;
 		this.producto = producto;
+		this.ticket = ticket;
 	}
+	
 	public LineaTicket() {
 		super();
-		}
+	}
 	public int getId() {
 		return id;
 	}
@@ -61,7 +68,7 @@ public class LineaTicket {
 	public double getCantidad() {
 		return cantidad;
 	}
-	public void setCantidad(double cantidad) {
+	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
 	}
 	public double getPrecioVentaUnitario() {
@@ -69,6 +76,18 @@ public class LineaTicket {
 	}
 	public void setPrecioVentaUnitario(double precioVentaUnitario) {
 		this.precioVentaUnitario = precioVentaUnitario;
+	}
+	public double getCosteUnitarioEnVenta() {
+		return costeUnitarioEnVenta;
+	}
+	public void setCosteUnitarioEnVenta(double costeUnitarioEnVenta) {
+		this.costeUnitarioEnVenta = costeUnitarioEnVenta;
+	}
+	public double getBeneficioUnitarioEnVenta() {
+		return beneficioUnitarioEnVenta;
+	}
+	public void setBeneficioUnitarioEnVenta(double beneficioUnitarioEnVenta) {
+		this.beneficioUnitarioEnVenta = beneficioUnitarioEnVenta;
 	}
 	public double getIvaAplicado() {
 		return ivaAplicado;
@@ -84,13 +103,14 @@ public class LineaTicket {
 	}
 	@Override
 	public String toString() {
-	    return "LineaTicket [id=" + id + ", cantidad=" + cantidad +
-	            ", precioVentaUnitario=" + precioVentaUnitario +
-	            ", ivaAplicado=" + ivaAplicado + "]";
+		return "LineaTicket [id=" + id + ", cantidad=" + cantidad + ", precioVentaUnitario=" + precioVentaUnitario
+				+ ", costeUnitarioEnVenta=" + costeUnitarioEnVenta + ", beneficioUnitarioEnVenta="
+				+ beneficioUnitarioEnVenta + ", ivaAplicado=" + ivaAplicado + "]";
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(cantidad, id, ivaAplicado, precioVentaUnitario, producto);
+		return Objects.hash(beneficioUnitarioEnVenta, cantidad, costeUnitarioEnVenta, id, ivaAplicado,
+				precioVentaUnitario, producto, ticket);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -101,10 +121,13 @@ public class LineaTicket {
 		if (getClass() != obj.getClass())
 			return false;
 		LineaTicket other = (LineaTicket) obj;
-		return Double.doubleToLongBits(cantidad) == Double.doubleToLongBits(other.cantidad) && id == other.id
-				&& Double.doubleToLongBits(ivaAplicado) == Double.doubleToLongBits(other.ivaAplicado)
+		return Double.doubleToLongBits(beneficioUnitarioEnVenta) == Double
+				.doubleToLongBits(other.beneficioUnitarioEnVenta) && cantidad == other.cantidad
+				&& Double.doubleToLongBits(costeUnitarioEnVenta) == Double.doubleToLongBits(other.costeUnitarioEnVenta)
+				&& id == other.id && Double.doubleToLongBits(ivaAplicado) == Double.doubleToLongBits(other.ivaAplicado)
 				&& Double.doubleToLongBits(precioVentaUnitario) == Double.doubleToLongBits(other.precioVentaUnitario)
-				&& Objects.equals(producto, other.producto);
+				&& Objects.equals(producto, other.producto) && Objects.equals(ticket, other.ticket);
 	}
-    
+	
+	
 }

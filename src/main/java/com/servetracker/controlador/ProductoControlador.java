@@ -48,7 +48,8 @@ public class ProductoControlador {
     
     @PostMapping
     public ResponseEntity<Producto> guardar(@RequestBody Producto producto) {
-        return ResponseEntity.ok(servicio.guardar(producto));
+        Producto nuevo = servicio.guardar(producto);
+        return ResponseEntity.status(201).body(nuevo);
     }
 
    

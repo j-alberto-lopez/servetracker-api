@@ -1,6 +1,6 @@
 package com.servetracker.repositorio;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,8 +14,8 @@ public interface LineaTicketRepositorio extends JpaRepository<LineaTicket, Integ
 
 	List<LineaTicket> findByProductoAndTicketFechaGreaterThanEqualAndTicketFechaLessThan(
 		    Producto producto,
-		    LocalDateTime inicio,
-		    LocalDateTime fin
+		    LocalDate inicio,
+		    LocalDate fin
 		);
 	
 }

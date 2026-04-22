@@ -46,6 +46,14 @@ public class TicketServicioImpl implements TicketServicio {
 
         Ticket ticket = obtenerPorId(ticketId);
         Producto producto = productoService.obtenerPorId(productoId);
+        
+     // 🔹 2. Validar stock
+        if (!stockServicio.hayStockSuficiente(producto, cantidad)) {
+            throw new RuntimeException("Stock insuficiente");
+        }
+        
+        double costeUnitario = stockServicio.calcularCosteFIFO(producto);
+        double beneficioUnitario = producto.getPrecioVenta() - costeUnitario;
 
         // 🔥 crear línea
         LineaTicket linea = new LineaTicket();
@@ -53,6 +61,8 @@ public class TicketServicioImpl implements TicketServicio {
         linea.setProducto(producto);
         linea.setCantidad(cantidad);
         linea.setPrecioVentaUnitario(producto.getPrecioVenta());
+        linea.setCosteUnitarioEnVenta(costeUnitario);
+        linea.setBeneficioUnitarioEnVenta(beneficioUnitario);
 
         // 🔥 IVA seguro
         if (producto.getTipoIVA() != null) {
@@ -64,7 +74,8 @@ public class TicketServicioImpl implements TicketServicio {
         lineaTicketRepository.save(linea);
 
         // 🔥 descontar stock (centralizado)
-        stockServicio.descontarStock(producto, cantidad);
+     // 🔹 8. Descontar stock FIFO (antes descontaba stock pero no unidades disponibles del pedido)
+        stockServicio.descontarStockFIFO(producto, cantidad);
     }
 
     @Override

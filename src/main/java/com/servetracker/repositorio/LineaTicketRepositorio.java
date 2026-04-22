@@ -12,9 +12,10 @@ import com.servetracker.modelo.Producto;
 @Repository
 public interface LineaTicketRepositorio extends JpaRepository<LineaTicket, Integer> {
 
-	List<LineaTicket> findByProductoAndTicketFechaBetween(
+	List<LineaTicket> findByProductoAndTicketFechaGreaterThanEqualAndTicketFechaLessThan(
 		    Producto producto,
 		    LocalDateTime inicio,
 		    LocalDateTime fin
 		);
+	
 }

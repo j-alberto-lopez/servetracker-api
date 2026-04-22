@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.servetracker.modelo.LineaPedido;
@@ -27,5 +28,5 @@ public interface LineaPedidoRepositorio extends JpaRepository<LineaPedido, Integ
 
 	//List<LineaPedido> findByProductoAndCantidadDisponibleGreaterThanOrderByPedidoFechaAsc(Producto producto, int cantidad, Pageable pageable);
 	
-
+	
 }

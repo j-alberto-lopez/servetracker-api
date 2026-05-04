@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.servetracker.dtos.ElementoListadoProductoRespuesta;
 import com.servetracker.dtos.ProveedorStockDTO;
+import com.servetracker.excepciones.NoEncontradoException;
 import com.servetracker.modelo.LineaPedido;
 import com.servetracker.modelo.LineaTicket;
 import com.servetracker.modelo.Producto;
@@ -189,9 +190,9 @@ public class ProductoServicioImpl implements ProductoServicio {
     // =====================================================
 
     @Override
-    public Producto obtenerPorId(int id) {
+    public Producto obtenerPorId(int id) throws NoEncontradoException {
         return productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
+                .orElseThrow(() -> new NoEncontradoException());
     }
 
     @Override
